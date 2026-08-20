@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="en-us">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>NeoGeo Web Player</title>
+    <script src="config.js"></script>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+
+        canvas.emscripten {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 68%; /* Laisse plus d'espace (32%) en haut pour le titre */
+            width: auto;
+            aspect-ratio: 4 / 3;
+            max-width: 100%;
+            border: 0px none;
+            background-color: black;
+            display: block;
+            image-rendering: pixelated;
+            margin: 0;
+            box-shadow: 0px -5px 30px rgba(0,0,0,0.8);
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            height: 80px;
+            width: auto;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-link {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .header-link:hover {
+            opacity: 0.9;
+        }
+
+        h1,
+        h2 {
+            margin: 0;
+            text-align: left;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #4caf50;
+        }
+
+        h2 {
+            font-size: 18px;
+            color: #aaa;
+            font-weight: normal;
+        }
+
+        #status {
+            font-size: 11px;
+            color: #666;
+            margin: 5px;
+        }
+
+        #output {
+            width: 95%;
+            height: 500px;
+            background: #333;
+            border: 1px solid #555;
+            color: #0f0;
+            font-family: monospace;
+            overflow-y: scroll;
+            padding: 10px;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+
+        #controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+        }
+
+        #controls label {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        #driver-input {
+            background: #333;
+            color: #f0f0f0;
+            border: 1px solid #555;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 150px;
+        }
+
+        #rom-file {
+            background: #333;
+            color: #f0f0f0;
+            border: 1px solid #555;
+            padding: 6px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        #load-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        #load-btn:hover {
+            background: #45a049;
+        }
+
+        #load-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+
+        #rom-status {
+            color: #aaa;
+            font-size: 13px;
+        }
+
+        .game-library {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 20px;
+            background: #1a1a1a;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .game-card {
+            background: #252525;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #333;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: #5c6bc0;
+        }
+
+        .game-img {
+            width: 100%;
+            height: 120px;
+            object-fit: contain;
+            background: #111 url('images/background.png') center/cover no-repeat;
+            border-bottom: 1px solid #333;
+        }
+
+        .game-info {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+
+        .game-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #eee;
+            margin-bottom: 5px;
+        }
+
+        .game-links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .official-link {
+            font-size: 11px;
+            color: #00bcd4;
+            text-decoration: none;
+        }
+
+        .official-link:hover {
+            text-decoration: underline;
+        }
+
+        .launch-btn {
+            background: #3f51b5;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .launch-btn:hover {
+            background: #5c6bc0;
+        }
+
+        #share-container {
+            margin-top: 15px;
+            padding: 10px;
+            background: #222;
+            border: 1px dashed #444;
+            border-radius: 5px;
+            font-size: 13px;
+            color: #aaa;
+            display: none;
+        }
+
+        #share-url {
+            color: #00bcd4;
+            word-break: break-all;
+            flex-grow: 1;
+        }
+
+        .copy-btn {
+            background: #444;
+            color: #ccc;
+            border: 1px solid #555;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            margin-left: 10px;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #555;
+            color: white;
+        }
+
+        .community-links {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .community-links a {
+            color: #4caf50;
+            text-decoration: underline;
+            transition: color 0.2s;
+        }
+
+        .community-links a:hover {
+            color: #81c784;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="status" style="margin-top: 10px; font-size: 14px; color: #aaa;"></div>
+    <progress value="0" max="100" id="progress" hidden=1></progress>
+
+    <div id="share-container" style="display: none; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px;">
+        <span>🔗 Share this game:</span>
+        <span id="share-url"></span>
+        <button class="copy-btn" onclick="copyShareUrl()">📋 Copy</button>
+    </div>
+
+    <div style="position: relative; width: 100%; max-width: 1200px; margin: 0 auto;">
+        <img id="game-bg" src="images/cover.png" alt="" style="width: 100%; height: auto; display: block;">
+        <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+    </div>
+    <div style="text-align: center; margin-top: 15px;">
+        <a id="game-link" href="#" target="_blank" style="color: #4caf50; font-size: 18px; font-weight: bold; text-decoration: underline;"></a>
+    </div>
+
+    <details style="width: 95%; margin-top: 10px;">
+        <summary style="cursor: pointer; color: #888; font-size: 14px; margin-bottom: 5px;">💻 Console Output (click to
+            expand)</summary>
+        <textarea id="output" readonly></textarea>
+    </details>
+
+
+
+    <script type='text/javascript'>
+        // Initialization from config.js
+        document.title = CONFIG.gameTitle;
+        document.getElementById('game-link').href = CONFIG.gameUrl;
+        document.getElementById('game-link').textContent = CONFIG.linkText;
+        document.getElementById('game-link').style.color = CONFIG.linkColor;
+        document.getElementById('game-bg').alt = CONFIG.gameTitle;
+
+        var gameName = CONFIG.romName; // Default ROM to load
+        var statusElement = document.getElementById('status');
+        var progressElement = document.getElementById('progress');
+        var outputElement = document.getElementById('output');
+
+
+        function log(msg) {
+            outputElement.value += msg + "\n";
+            outputElement.scrollTop = outputElement.scrollHeight;
+        }
+
+        // IndexedDB for storing ROM data
+        var DB_NAME = 'MameWasmDB';
+        var DB_VERSION = 1;
+        var STORE_NAME = 'roms';
+
+        function openDB() {
+            return new Promise(function (resolve, reject) {
+                var req = indexedDB.open(DB_NAME, DB_VERSION);
+                req.onupgradeneeded = function (e) {
+                    var db = e.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME);
+                    }
+                };
+                req.onsuccess = function (e) { resolve(e.target.result); };
+                req.onerror = function (e) { reject(e.target.error); };
+            });
+        }
+
+        function storeData(romName, romData, cassName, cassData) {
+            return openDB().then(function (db) {
+                return new Promise(function (resolve, reject) {
+                    var tx = db.transaction(STORE_NAME, 'readwrite');
+                    var store = tx.objectStore(STORE_NAME);
+                    if (romData) {
+                        store.put(romData, 'romData');
+                        store.put(romName, 'romName');
+                    }
+                    if (cassData !== undefined) { // can be null to clear
+                        store.put(cassData, 'cassData');
+                        store.put(cassName, 'cassName');
+                    }
+                    tx.oncomplete = function () { resolve(); };
+                    tx.onerror = function (e) { reject(e.target.error); };
+                });
+            });
+        }
+
+        // Define Module BEFORE mametiny.js loads
+        window.Module = {
+            noInitialRun: false,
+            preRun: [],
+            postRun: [],
+            print: (function () {
+                return function (text) {
+                    if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+                    console.log(text);
+                    outputElement.value += text + "\n";
+                    outputElement.scrollTop = outputElement.scrollHeight;
+                };
+            })(),
+            printErr: function (text) {
+                if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+                console.error(text);
+                outputElement.value += "[ERR] " + text + "\n";
+                outputElement.scrollTop = outputElement.scrollHeight;
+            },
+            canvas: (function () {
+                var canvas = document.getElementById('canvas');
+                canvas.addEventListener("webglcontextlost", function (e) { alert('WebGL context lost. Reload the page.'); e.preventDefault(); }, false);
+                return canvas;
+            })(),
+            setStatus: function (text) {
+                if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
+                if (text === Module.setStatus.last.text) return;
+                statusElement.innerHTML = text;
+            },
+            totalDependencies: 0,
+            monitorRunDependencies: function (left) {
+                this.totalDependencies = Math.max(this.totalDependencies, left);
+                Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+            }
+        };
+
+        // Use a synchronous ROM load via IndexedDB sync API
+        // Since IndexedDB is async, we use noInitialRun + run() approach
+        // But since run() may not be exported, we use preRun with sync XHR fallback
+        // System is fixed to NeoGeo
+        var driver = 'neogeo';
+        Module.arguments = [driver, gameName, '-rompath', '/roms', '-hashpath', '/hash', '-cfg_directory', '/cfg', '-joystick', '-video', 'accel', '-resolution', '640x480', '-keepaspect', '-window'];
+
+        // Check for game to load (URL parameter has priority, then sessionStorage)
+        var urlParams = new URLSearchParams(window.location.search);
+        var gameToLoad = urlParams.get('load') || sessionStorage.getItem('mame_load_internal');
+
+        loadStoredData().then(function (data) {
+            if (gameToLoad) {
+                // Determine the correct filename (handle 'local' case)
+                var fileName = (gameToLoad === 'local') ? data.cassName : gameToLoad;
+
+                if (fileName) {
+                    var isState = fileName.endsWith('.sta');
+
+                    if (isState) {
+                        var stateName = fileName.replace('.sta', '');
+                        Module.arguments.push('-state', stateName);
+                        log('💿 Loading savestate: ' + fileName);
+                    } else {
+                        Module.arguments.push('-cass', '/roms/' + fileName);
+                        Module.arguments.push('-autoboot_delay', '1');
+                        Module.arguments.push('-autoboot_command', '1CLOAD\\n');
+                        log('💿 Loading cassette: ' + fileName);
+                    }
+
+                    // Auto-scroll to emulator
+                    setTimeout(function () {
+                        document.getElementById('canvas').scrollIntoView({ behavior: 'smooth' });
+                    }, 500);
+
+                    // Show share link
+                    var shareUrl = window.location.origin + window.location.pathname + '?load=' + encodeURIComponent(fileName);
+                    document.getElementById('share-container').style.display = 'flex';
+                    document.getElementById('share-url').textContent = shareUrl;
+                }
+
+                // Clear internal flag so refresh starts clean
+                sessionStorage.removeItem('mame_load_internal');
+            } else {
+                log('⌨️ Standalone mode (no cassette auto-loaded)');
+            }
+        });
+
+        Module.preRun.push(function () {
+            Module.addRunDependency('mame-init');
+
+            // 1. Ensure directory exists
+            try { FS.mkdir('/roms'); } catch (ex) { }
+            try { FS.mkdir('/sta'); FS.mkdir('/sta/neogeo'); } catch (ex) { }
+            try { FS.mkdir('/hash'); } catch (ex) { }
+            try { FS.mkdir('/cfg'); } catch (ex) { }
+
+            // 2. Fetch NeoGeo ROM from server
+            var romPromise = fetch('roms/neogeo.zip')
+                .then(res => {
+                    if (!res.ok) throw new Error('NeoGeo ROM missing');
+                    return res.arrayBuffer();
+                })
+                .then(buffer => {
+                    FS.writeFile('/roms/neogeo.zip', new Uint8Array(buffer));
+                    log('✅ System ROM loaded: neogeo.zip');
+                });
+
+            // 2.1 Fetch NeoGeo Hash XML
+            var hashPromise = fetch('hash/NeoGeo.xml')
+                .then(res => {
+                    if (!res.ok) throw new Error('NeoGeo XML missing');
+                    return res.arrayBuffer();
+                })
+                .then(buffer => {
+                    FS.writeFile('/hash/neogeo.xml', new Uint8Array(buffer));
+                    log('✅ Hash file loaded: neogeo.xml');
+                });
+
+            // 2.2 Fetch Game ROM
+            var gamePromise = fetch('roms/' + gameName + '.zip')
+                .then(res => {
+                    if (!res.ok) throw new Error(gameName + '.zip missing');
+                    return res.arrayBuffer();
+                })
+                .then(buffer => {
+                    FS.writeFile('/roms/' + gameName + '.zip', new Uint8Array(buffer));
+                    log('✅ Game ROM loaded: ' + gameName + '.zip');
+                });
+
+            // 2.3 Fetch Default CFG (Input bindings)
+            var cfgPromise = fetch('cfg/default.txt')
+                .then(res => {
+                    if (!res.ok) return null;
+                    return res.arrayBuffer();
+                })
+                .then(buffer => {
+                    if (buffer) {
+                        FS.writeFile('/cfg/default.cfg', new Uint8Array(buffer));
+                        log('✅ Input config loaded: default.cfg');
+                    }
+                });
+
+            // 3. Load Cassette/State from IndexedDB if present
+            var cassPromise = loadStoredData().then(function (res) {
+                if (res.cassName && res.cassData) {
+                    var data = new Uint8Array(res.cassData);
+                    if (res.cassName.endsWith('.sta')) {
+                        FS.writeFile('/sta/neogeo/' + res.cassName, data);
+                        log('✅ Savestate mounted: ' + res.cassName);
+                    } else {
+                        FS.writeFile('/roms/' + res.cassName, data);
+                        log('✅ Cassette mounted: ' + res.cassName);
+                    }
+                }
+            });
+
+            Promise.all([romPromise, hashPromise, gamePromise, cassPromise, cfgPromise]).then(() => {
+                Module.removeRunDependency('mame-init');
+            }).catch(err => {
+                log('❌ Error during init: ' + err);
+                Module.removeRunDependency('mame-init');
+            });
+        });
+
+        window.onerror = function (event, source, lineno, colno, error) {
+            Module.setStatus('Exception thrown, see JavaScript console');
+            var msg = "window.onerror: " + event + "\n";
+            if (source) msg += "Source: " + source + ":" + lineno + ":" + colno + "\n";
+            if (error && error.stack) msg += "Stack:\n" + error.stack + "\n";
+            outputElement.value += "\n[FATAL ERROR]\n" + msg + "\n";
+            outputElement.scrollTop = outputElement.scrollHeight;
+        };
+
+        function loadStoredData() {
+            return openDB().then(function (db) {
+                return new Promise(function (resolve, reject) {
+                    var tx = db.transaction(STORE_NAME, 'readonly');
+                    var store = tx.objectStore(STORE_NAME);
+                    var reqs = {
+                        romName: store.get('romName'),
+                        romData: store.get('romData'),
+                        cassName: store.get('cassName'),
+                        cassData: store.get('cassData')
+                    };
+
+                    tx.oncomplete = function () {
+                        resolve({
+                            romName: reqs.romName.result,
+                            romData: reqs.romData.result,
+                            cassName: reqs.cassName.result,
+                            cassData: reqs.cassData.result
+                        });
+                    };
+                    tx.onerror = function (e) { reject(e.target.error); };
+                });
+            });
+        }
+
+
+
+
+        function copyShareUrl() {
+            var url = document.getElementById('share-url').textContent;
+            var btn = document.querySelector('.copy-btn');
+
+            navigator.clipboard.writeText(url).then(function () {
+                var oldText = btn.innerHTML;
+                btn.innerHTML = '✅ Copied!';
+                btn.style.borderColor = '#4caf50';
+                btn.style.color = '#4caf50';
+
+                setTimeout(function () {
+                    btn.innerHTML = oldText;
+                    btn.style.borderColor = '#555';
+                    btn.style.color = '#ccc';
+                }, 2000);
+            }).catch(function (err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+
+
+
+
+    </script>
+    <script async type="text/javascript" src="mame.js"></script>
+</body>
+
+</html>

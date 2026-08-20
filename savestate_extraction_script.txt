@@ -1,0 +1,25 @@
+(function downloadSaveState() {
+    try {
+        var folder = '/sta/neogeo';
+        var files = FS.readdir(folder).filter(f => f.endsWith('.sta'));
+        
+        if (files.length === 0) {
+            alert("Aucune sauvegarde trouvée. Utilisez F2 dans l'émulateur pour sauvegarder.");
+            return;
+        }
+
+        // On prend la sauvegarde la plus récente
+        var fileName = files.sort().pop();
+        var data = FS.readFile(folder + '/' + fileName);
+        
+        var blob = new Blob([data], {type: 'application/octet-stream'});
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.click();
+        URL.revokeObjectURL(url);
+    } catch(e) {
+        console.error("Erreur lors de la récupération de la sauvegarde :", e);
+    }
+})();

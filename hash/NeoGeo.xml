@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE softwarelist SYSTEM "softwarelist.dtd">
+<softwarelist name="neogeo" description="SNK Neo-Geo Cartridges">
+  <software name="midnight_neo_0031">
+    <description>Scorpion Engine game for NeoGeo</description>
+    <year>2026</year>
+    <publisher>unknown</publisher>
+    <sharedfeat name="release" value="MVS,AES" />
+    <sharedfeat name="compatibility" value="MVS,AES" />
+    <part name="cart" interface="neo_cart">
+      <dataarea name="maincpu" width="16" endianness="big" size="0x080000">
+        <rom loadflag="load16_word_swap" name="midnight-p1.bin" offset="0x000000" size="0x080000" crc="988e0f90" sha1="5bdd2aa12ae0a8cd526dab4e7b125a4ecb5ef841" />
+      </dataarea>
+      <dataarea name="fixed" size="0x020000">
+        <rom name="midnight-s1.bin" offset="0x000000" size="0x020000" crc="2e6b14aa" sha1="59a9925b50bc2951924804ad14e04fd3e3a888ba" />
+      </dataarea>
+      <dataarea name="sprites" size="0x1c0000">
+        <rom loadflag="load16_byte" name="midnight-c1.bin" offset="0x000000" size="0x0e0000" crc="9830113d" sha1="1c8ab59cc3f939497ba78393a0e0519f24a78c99" />
+        <rom loadflag="load16_byte" name="midnight-c2.bin" offset="0x000001" size="0x0e0000" crc="fa0285f6" sha1="3c52216b12de6ac594b154cf4f4c505f50f2ab91" />
+      </dataarea>
+      <dataarea name="audiocpu" size="0x040000">
+        <rom name="midnight-m1.bin" offset="0x000000" size="0x040000" crc="3f209f66" sha1="3903859fcf3fd9171ed5388791d77b5f6a3f4f13" />
+      </dataarea>
+      <dataarea name="ymsnd:adpcma" size="0x040000">
+        <rom name="midnight-v1.bin" offset="0x000000" size="0x040000" crc="c7271644" sha1="86c452d022476d62fca81a5fed9fc146e0d7deb4" />
+      </dataarea>
+      <dataarea name="ymsnd:adpcmb" size="0xbc0000">
+        <rom name="midnight-v2.bin" offset="0x000000" size="0xbc0000" crc="a9731c76" sha1="788a199363f80456b0f037f8d7dd20e8c9f4ea04" />
+      </dataarea>
+    </part>
+  </software>
+</softwarelist>
