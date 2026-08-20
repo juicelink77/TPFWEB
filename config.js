@@ -1,7 +1,8 @@
+// Config for neogeo-web-template (see template README). Variable MUST be CONFIG (uppercase).
 const CONFIG = {
-    romName: "midnight_neo_0031", // Name of the ROM file (without .zip extension)
-    gameTitle: "Midnight Wanderers", // Game title (displayed in the browser tab)
-    gameUrl: "https://z-team.itch.io/midnight-wanderers", // Link to the official game page
-    linkText: "Play Midnight Wanderers on itch.io", // Text for the link
-    linkColor: "#F45E33" // Color for the link (hex code, color name, etc.)
+    romName:   "tpf",              // = zip filename (no ext) AND the <software name>
+    gameTitle: "The Perfect Fighter",
+    gameUrl:   "",                    // <-- FILL IN: link to your page (itch.io, GitHub...)
+    linkText:  "The Perfect Fighter",
+    linkColor: "#e0b030"
 };

@@ -7,7 +7,7 @@
     <title>NeoGeo Web Player</title>
     <script src="config.js"></script>
     <style>
-        body {
+body {
             background-color: #1a1a1a;
             color: #f0f0f0;
             font-family: sans-serif;
@@ -419,7 +419,7 @@
         // But since run() may not be exported, we use preRun with sync XHR fallback
         // System is fixed to NeoGeo
         var driver = 'neogeo';
-        Module.arguments = [driver, gameName, '-rompath', '/roms', '-hashpath', '/hash', '-cfg_directory', '/cfg', '-joystick', '-video', 'accel', '-resolution', '640x480', '-keepaspect', '-window'];
+        Module.arguments = [driver, gameName, '-rompath', '/roms', '-hashpath', '/hash', '-cfg_directory', '/cfg', '-joystick', '-video', 'accel', '-resolution', '640x480', '-keepaspect', '-window', '-audio_latency', '1'];
 
         // Check for game to load (URL parameter has priority, then sessionStorage)
         var urlParams = new URLSearchParams(window.location.search);
@@ -601,6 +601,49 @@
 
     </script>
     <script async type="text/javascript" src="mame.js"></script>
+<script>
+/* Pont manette -> clavier pour MAME WASM (Xbox 360, mapping standard). */
+(function () {
+  const MAP = {
+    up:{code:'ArrowUp',kc:38}, down:{code:'ArrowDown',kc:40},
+    left:{code:'ArrowLeft',kc:37}, right:{code:'ArrowRight',kc:39},
+    a:{code:'KeyC',kc:67}, b:{code:'KeyV',kc:86},        /* boutons 1/2 = C / V (cfg/default.txt) */
+    x:{code:'Space',kc:32}, y:{code:'ShiftLeft',kc:16},  /* boutons 3/4 = Espace / Maj */
+    start:{code:'Digit1',kc:49}, back:{code:'Digit5',kc:53}, menu:{code:'Tab',kc:9},
+  };
+  const st = {};
+  const targets = [window, document, document.getElementById('canvas')].filter(Boolean);
+  function send(type, m) {
+    for (const t of targets) {
+      const ev = new KeyboardEvent(type, { code:m.code, key:m.code, bubbles:false, cancelable:true });
+      try { Object.defineProperty(ev,'keyCode',{value:m.kc});
+            Object.defineProperty(ev,'which',{value:m.kc}); } catch(e){}
+      t.dispatchEvent(ev);
+    }
+  }
+  function set(name, pressed) {
+    const m = MAP[name]; if(!m) return;
+    if (pressed && !st[name]) { st[name]=1; send('keydown',m); console.log('PAD press', name, '->', m.code); }
+    else if (!pressed && st[name]) { st[name]=0; send('keyup',m); }
+  }
+  let announced=false;
+  function poll() {
+    const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+    let gp=null; for (const g of gps) if(g){gp=g;break;}
+    if (gp) {
+      if(!announced){announced=true; console.log('PAD connected:', gp.id, '| buttons', gp.buttons.length, '| axes', gp.axes.length);}
+      const b=gp.buttons, ax=gp.axes, AX=0.5, P=i=>b[i]&&(b[i].pressed||b[i].value>0.5);
+      set('up',P(12)||ax[1]<-AX); set('down',P(13)||ax[1]>AX);
+      set('left',P(14)||ax[0]<-AX); set('right',P(15)||ax[0]>AX);
+      set('a',P(0)); set('b',P(1)); set('x',P(2)); set('y',P(3));
+      set('start',P(9)); set('back',P(8)); set('menu',P(4));
+    }
+    requestAnimationFrame(poll);
+  }
+  requestAnimationFrame(poll);
+  console.log('== Gamepad bridge v2 actif ==');
+})();
+</script>
 </body>
 
 </html>

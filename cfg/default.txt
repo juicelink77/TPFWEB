@@ -33,6 +33,16 @@
                     KEYCODE_L OR KEYCODE_V
                 </newseq>
             </port>
+            <port type="P1_BUTTON3">
+                <newseq type="standard">
+                    KEYCODE_SPACE
+                </newseq>
+            </port>
+            <port type="P1_BUTTON4">
+                <newseq type="standard">
+                    KEYCODE_LSHIFT
+                </newseq>
+            </port>
         </input>
         <debugger savewindows="1" groupwindows="1">
             <colors theme="0" />
