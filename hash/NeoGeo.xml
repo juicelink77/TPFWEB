@@ -9,7 +9,7 @@
     <sharedfeat name="compatibility" value="MVS,AES" />
     <part name="cart" interface="neo_cart">
       <dataarea name="maincpu" width="16" endianness="big" size="0x100000">
-        <rom name="tpf-p1.p1" loadflag="load16_word_swap" offset="0x000000" size="0x100000" crc="40fe3792" sha1="b0290a2b223d80c99a287848a98c0a9510a9bd6d" />
+        <rom name="tpf-p1.p1" loadflag="load16_word_swap" offset="0x000000" size="0x100000" crc="af102737" sha1="f05bc805a40c2423b46bdc08ab4a5d6db5f505cd" />
       </dataarea>
       <dataarea name="fixed" size="0x20000">
         <rom name="tpf-s1.s1" offset="0x000000" size="0x20000" crc="a5bd3d5e" sha1="7e50de8a583ab35e636be933e4f2824147fd7426" />
@@ -18,8 +18,8 @@
         <rom name="tpf-m1.m1" offset="0x000000" size="0x20000" crc="913e8481" sha1="efea90dd1dfa922c9d2d048ee21cb5bc7d73aa4b" />
       </dataarea>
       <dataarea name="sprites" size="0x800000">
-        <rom name="tpf-c1.c1" loadflag="load16_byte" offset="0x000000" size="0x400000" crc="c39953ea" sha1="2ff5ed3838228d097a9d9a7ec71c380d1c4a7cef" />
-        <rom name="tpf-c2.c2" loadflag="load16_byte" offset="0x000001" size="0x400000" crc="70942403" sha1="b7889aa713b886a21faeae0a504ada27f8dad46c" />
+        <rom name="tpf-c1.c1" loadflag="load16_byte" offset="0x000000" size="0x400000" crc="a2029e33" sha1="a64fd955b60e6a708e11257d13890ed3232827cb" />
+        <rom name="tpf-c2.c2" loadflag="load16_byte" offset="0x000001" size="0x400000" crc="b2d61dcf" sha1="274ebe60771e648fe8e96e5d5be37950d2e2f50c" />
       </dataarea>
       <dataarea name="ymsnd:adpcma" size="0x40000">
         <rom name="tpf-va.va" offset="0x000000" size="0x40000" crc="779452cd" sha1="9171c270cf645d12f305143d236cadba427fa199" />
