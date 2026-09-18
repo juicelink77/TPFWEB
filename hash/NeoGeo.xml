@@ -9,23 +9,23 @@
     <sharedfeat name="compatibility" value="MVS,AES" />
     <part name="cart" interface="neo_cart">
       <dataarea name="maincpu" width="16" endianness="big" size="0x100000">
-        <rom name="tpf-p1.p1" loadflag="load16_word_swap" offset="0x000000" size="0x100000" crc="693dfbfa" sha1="d18f4387fc9f2e314ca4e6fa6a2cc8f259cb3503" />
+        <rom name="tpf-p1.p1" loadflag="load16_word_swap" offset="0x000000" size="0x100000" crc="396114fc" sha1="aaa72047fb2fa94b166111785b442dd26bb0d312" />
       </dataarea>
       <dataarea name="fixed" size="0x20000">
         <rom name="tpf-s1.s1" offset="0x000000" size="0x20000" crc="a5bd3d5e" sha1="7e50de8a583ab35e636be933e4f2824147fd7426" />
       </dataarea>
       <dataarea name="audiocpu" size="0x20000">
-        <rom name="tpf-m1.m1" offset="0x000000" size="0x20000" crc="ee6de228" sha1="4cceb0c49977b57170319b54414a11f44578be1d" />
+        <rom name="tpf-m1.m1" offset="0x000000" size="0x20000" crc="1ba393e2" sha1="2f47ba063b2836339c4ee3ccd66b1aaae97c4ecc" />
       </dataarea>
-      <dataarea name="sprites" size="0x800000">
-        <rom name="tpf-c1.c1" loadflag="load16_byte" offset="0x000000" size="0x400000" crc="462c61b0" sha1="06252cb4e97b513589aca408793feaa9b0d0adfa" />
-        <rom name="tpf-c2.c2" loadflag="load16_byte" offset="0x000001" size="0x400000" crc="83adf00f" sha1="2f036aedfef40188a4bd78ecd70c9b5bb43dd6e8" />
+      <dataarea name="sprites" size="0x1000000">
+        <rom name="tpf-c1.c1" loadflag="load16_byte" offset="0x000000" size="0x800000" crc="be376b56" sha1="5ad255fb4320d277b0dcf9a867e8c1269cbe9796" />
+        <rom name="tpf-c2.c2" loadflag="load16_byte" offset="0x000001" size="0x800000" crc="e091d7dd" sha1="c07ba481891917b7c9d3c1f7af62c77f62925039" />
       </dataarea>
       <dataarea name="ymsnd:adpcma" size="0x40000">
         <rom name="tpf-va.va" offset="0x000000" size="0x40000" crc="a5e79f28" sha1="3be1a1226681279436599104b8b3a833e170113d" />
       </dataarea>
       <dataarea name="ymsnd:adpcmb" size="0x1000000">
-        <rom name="tpf-v1.v1" offset="0x000000" size="0x1000000" crc="7ff5e5a4" sha1="e2b7df5053bd3ae8cf509927699f5d0812a9c17c" />
+        <rom name="tpf-v1.v1" offset="0x000000" size="0x1000000" crc="c23453fa" sha1="8891f262ffa2482e437757308946b95d946a03a9" />
       </dataarea>
     </part>
   </software>
